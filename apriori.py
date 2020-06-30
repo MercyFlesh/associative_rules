@@ -7,6 +7,18 @@ class Transaction:
         pass
 
 
+def lift():
+    pass
+
+
+def confidience():
+    pass
+
+
+def support():
+    pass
+
+
 def apriori():
     pass
 
