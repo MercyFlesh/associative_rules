@@ -1,36 +1,18 @@
 import csv
 import argparse
-import apriori
-from itertools import groupby
-
-
-def csv_read(path, sort_col='year'):
-    try:
-        with open(path, 'r') as file:
-            reader = csv.DictReader(file, delimiter=',')
-            
-            # i'm stupid and i dont know how to make grouping otherwise so that it looks normal
-            sort_date = sorted(reader, key=lambda row: row[sort_col], reverse=False) 
-            for row in sort_date:
-                yield row
-    
-    except FileNotFoundError as ex:
-        raise FileNotFoundError(ex)
-    except csv.Error as ex:
-        raise ValueError(ex)
+from apriori import apriori, get_associative_rules
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-P', '--path', help="path to database", type=str, required=True)
-    parser.add_argument('-S', '--support', type=float, required=False)
-    parser.add_argument('-C', '--confidience', type=float, required=False)
+    parser.add_argument('-S', '--support', type=float, default=0.5, required=False)
+    parser.add_argument('-C', '--confidience', type=float, default=0.6, required=False)
     args = parser.parse_args()
-    
+
     try:
-        csv_reader_gen = csv_read(args.path)
-        for row in csv_reader_gen:
-            pass
+        sets_satisfying_min_sup = apriori(args.path, args.support) 
+        rules = get_associative_rules(args.path, sets_satisfying_min_sup, args.confidience)
 
     except Exception as ex:
         print(ex.args[0])
