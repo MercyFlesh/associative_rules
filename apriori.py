@@ -35,18 +35,22 @@ def _support(iterable, min_sup):
     support_set = set()
     temp_dict = dict()
     n = 0
-    
+
+    count_colls = len(iterable.send(None))
     for row in iterable:
         n += 1
-        for x in row:
-            temp_dict[x] = temp_dict.get(x, 0) + 1
+        for x, i in zip(row, range(count_colls)):
+            temp_dict[x] = temp_dict.get(x, 0) + 1    
+            for j in range(i+2, count_colls+1):
+                key = tuple(row[i:j])
+                temp_dict[key] = temp_dict.get(key, 0) + 1
             
     for key, val in temp_dict.items():
         support = val/n
         if support >= min_sup:
             support_set.add((key, support)) 
 
-    return n, support_set
+    return support_set
 
 
 def apriori(db_path, min_sup=0.5):
@@ -54,12 +58,9 @@ def apriori(db_path, min_sup=0.5):
         raise ValueError(f'minimum support must be a positive number within the interval (0, 1]. '
                          'Got {min_sup}.')
     
-    n, support_set = _support(_csv_read(db_path), min_sup)
-
-    items = {}
-    #need to implement the receipt of pairs of N elements...
-
-    return items
+    sup_items_set = _support(_csv_read(db_path), min_sup)
+    
+    return sup_items_set
 
 
 def get_associative_rules(db_path, items, min_confid=0.6):
