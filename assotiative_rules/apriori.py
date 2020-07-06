@@ -43,17 +43,18 @@ def _get_L_items(list_items, size):
     temp_L_items = set()
     length = len(list_items)
 
+    """
     def check_duble(new_item):
         for x in temp_L_items:
             if new_item == set(x):
                 return True
         return False
-
+    """
     for x, i in zip(list_items[:length-1], range(length-1)):
         for y in list_items[i+1:length]:
             item = set(x).union(y)
-            if len(item) == size and not check_duble(item):
-                temp_L_items.add(tuple(set(x).union(y)))
+            if len(item) == size: # and not check_duble(item):
+                temp_L_items.add(tuple(sorted(item)))
 
     return temp_L_items
 
