@@ -1,8 +1,7 @@
 import itertools as it
 
-
 def _get_keys_combinations(item):
-    return map(tuple, [x for x in it.chain(*[it.combinations(item, i+1) for i in range(len(item)-1)])])
+    return map(sorted, (set(x) for x in it.chain(*[it.combinations(item, i+1) for i in range(len(item)-1)])))
 
 
 def _confidience(rules, sup_items_dict, min_conf=None):
@@ -22,36 +21,20 @@ def _confidience(rules, sup_items_dict, min_conf=None):
 
     rules
     {
-        ((fist_items), (second_items)): [fist_support, second_support, support, confidience, lift, levarage, conviction],
+        ((fist_items), (second_items)): [fist_support, second_support, item_support, confidience, lift, levarage, conviction],
         ...
     }
     """
 
-    """
-    #Need to get rid of duplication code... but i stupid and don't know how implement in here...
-    
-    def get_conf():
-        for k, v in sup_items_dict.items():
-            if len(k) > 1:
-                probable_rules = list(_get_keys_combinations(k))
-                length = len(probable_rules)
-                for i in len(length):
-                    item = (probable_rules[i], probable_rules[length-1-i])    
-                    item_support_first = sup_items_dict[item[0]] 
-                    conf = v/item_support_first
-
-                    yield [item_support_first, ]       
-    """
-    
     for k, v in sup_items_dict.items():
         if len(k) > 1:
             probable_rules = list(_get_keys_combinations(k))
             length = len(probable_rules)
             for i in range(length):
-                item = (probable_rules[i], probable_rules[length-1-i])    
+                item = (tuple(probable_rules[i]), tuple(probable_rules[length-1-i]))    
                 item_support_first = sup_items_dict[item[0]] 
                 
-                conf = float(v/item_support_first)
+                conf = round(v/item_support_first, 4)
                 if min_conf:
                     if conf >= min_conf:
                         rules[item] = [
@@ -63,10 +46,18 @@ def _confidience(rules, sup_items_dict, min_conf=None):
                     ]
     
 
-def _lift(rules, sup_items_dict, min_lift=None):
+def _lift(rules, min_lift=None):
     if min_lift and min_lift < 0:
         raise ValueError('Mininmum lift must be a positive number within the interval [0, inf). '
                         f'You enter {min_lift}.')
+
+    for item, coef in rules.items():
+        lift = round(coef[3]/coef[1], 4)
+        if min_lift:
+            if lift >= min_lift:
+                coef.append(lift)
+        else:
+            coef.append(lift)
 
 
 def _levarage(rules, sup_items_dict, min_levar=None):
@@ -74,22 +65,42 @@ def _levarage(rules, sup_items_dict, min_levar=None):
         raise ValueError('Mininmum levarage must be a number within the interval [-1, 1]. '
                         f'You enter {min_levar}.')
 
+    for item, coef in rules.items():
+        levar = round(coef[2] - coef[0]*coef[1], 4)
+        if min_levar:
+            if levar >= min_levar:
+                coef.append(levar)
+        else:
+            coef.append(levar)
 
 def _conviction(rules, sup_items_dict, min_conv=None):
     if min_conv and min_conv < 0:
         raise ValueError('Mininmum conviction must be a positive number within the interval [0, inf). '
                          f'You enter {min_conv}.')
 
+    for item, coef in rules.items():
+        denom = 1 - coef[3]
+        if (denom > 0):
+            conv = round((1 - coef[1])/denom, 4)
+        else:
+            conv = 'inf'
 
-def get_associative_rules(sup_items_dict, conf=None, lift=None, levar=None, conv=None):
+        if min_conv:
+            if type(conv) == str or conv >= min_conv:
+                coef.append(conv)
+        else:
+            coef.append(conv)
+
+
+def get_associative_rules(sup_items_dict, min_conf=None, min_lift=None, min_levar=None, min_conv=None):
     
-    if any([conf, lift, levar, conv]):
+    if any([min_conf, min_lift, min_levar, min_conv]):
         #temp_rules = {k: [v] for k, v in sup_items_dict.items() if len(k) > 1}
         rules = dict()
-        _confidience(rules, sup_items_dict, conf)
-        _lift(rules, sup_items_dict, lift)
-        _levarage(rules, sup_items_dict, levar)
-        _conviction(rules, sup_items_dict, conv)
+        _confidience(rules, sup_items_dict, min_conf)
+        _lift(rules, min_lift)
+        _levarage(rules, sup_items_dict, min_levar)
+        _conviction(rules, sup_items_dict, min_conv)
         return rules           
      
     return sup_items_dict

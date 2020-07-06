@@ -16,8 +16,8 @@ def main():
     try:
         support_items = apriori(args.path, args.sup)
         rules = get_associative_rules(support_items, 
-                                    conf=args.conf, lift=args.lift, 
-                                    levar=args.levar, conv=args.conv)
+                                    min_conf=args.conf, min_lift=args.lift, 
+                                    min_levar=args.levar, min_conv=args.conv)
         print(rules)
 
     except Exception as ex:
