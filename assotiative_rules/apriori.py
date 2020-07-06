@@ -15,15 +15,15 @@ def _csv_read(path):
         raise StopIteration(ex)
 
 
-def _support(iterable, min_sup, set_items=set()):
+def _support(iterable, min_sup, list_items=set()):
     support_set = set()
     temp_dict = dict()
     n = 0
 
     for row in iterable:
         n += 1
-        if set_items:
-           for item in set_items:
+        if list_items:
+           for item in list_items:
                if set(item).issubset(row):
                    temp_dict[item] = temp_dict.get(item, 0) + 1
         else:
@@ -39,13 +39,20 @@ def _support(iterable, min_sup, set_items=set()):
     return support_set  
 
 
-def _get_L_items(sets_items, size):
+def _get_L_items(list_items, size):
     temp_L_items = set()
-    length = len(sets_items)
+    length = len(list_items)
 
-    for x, i in zip(sets_items[:length-1], range(length-1)):
-        for y in sets_items[i:length]:
-            if len(set(x).union(y)) == size:
+    def check_duble(new_item):
+        for x in temp_L_items:
+            if new_item == set(x):
+                return True
+        return False
+
+    for x, i in zip(list_items[:length-1], range(length-1)):
+        for y in list_items[i+1:length]:
+            item = set(x).union(y)
+            if len(item) == size and not check_duble(item):
                 temp_L_items.add(tuple(set(x).union(y)))
 
     return temp_L_items
@@ -60,7 +67,7 @@ def apriori(db_path, min_sup=0.5):
     
     n = 2
     L_items = sup_items.copy()
-    while(L_items != set()):
+    while(L_items):
         sup_items.update(L_items)
         L_items = _get_L_items(list(L_items.keys()), n)
         if not L_items:
