@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../assotiative_rules')
-import apriori
+sys.path.append('../associative_rules')
+from associative_rules import apriori
 import pytest
 import allure
 

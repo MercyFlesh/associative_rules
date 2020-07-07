@@ -2,8 +2,8 @@ import argparse
 import json
 import csv
 import os
-from assotiative_rules.apriori import apriori
-from assotiative_rules.rules import get_associative_rules
+from associative_rules.apriori import apriori
+from associative_rules.rules import get_associative_rules
 
 
 def write_to_json(rules, path):
