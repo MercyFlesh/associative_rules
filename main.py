@@ -2,6 +2,7 @@ import argparse
 import json
 import csv
 import os
+import time
 from associative_rules.apriori import apriori
 from associative_rules.rules import get_associative_rules
 
@@ -11,6 +12,8 @@ def write_to_json(rules, path):
     with open(f'{name_path}_rules.json', 'w') as file:
         to_json = {str(k): v for k, v in rules.items()}
         json.dump(to_json, file, indent=5)
+
+    print(f'[\033[32m+\033[0m] Rules are written in {name_path}_rules.json')
 
 
 def write_to_csv(rules, path):
@@ -34,6 +37,8 @@ def write_to_csv(rules, path):
         writer = csv.writer(file, delimiter=',')
         writer.writerows(data_list)
 
+    print(f'[\033[32m+\033[0m] Rules are written in {name_path}_rules.csv')
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -45,21 +50,29 @@ def main():
     parser.add_argument('--conv', help="minimum conviction", type=float, required=False)
     parser.add_argument('-J', '--json', help="write rules to json file", action='store_const', const=True, required=False)
     args = parser.parse_args()
-
+    
     try:
+        print('[\033[32m+\033[0m] Finding items suitables of min support is started...')
+        start_time = time.perf_counter()
         support_items = apriori(args.path, args.sup)
+        
+        print('[\033[32m+\033[0m] All items matching minimal support found')
+        print('[\033[32m+\033[0m] Finding rules in items')
+
         rules = get_associative_rules(support_items, 
                                     min_conf=args.conf, min_lift=args.lift, 
                                     min_levar=args.levar, min_conv=args.conv)
-                                    
+
         if args.json:
             write_to_json(rules, args.path)
         else:
             write_to_csv(rules, args.path)
 
+        print(f'[\033[32m*\033[0m] Runtime: {round(time.perf_counter() - start_time, 4)} sec.')
+
     except Exception as ex:
-        print(ex.args[0])
+        print(f'[\033[31m-\033[0m] Error: {ex.args[0]}')
 
-
+    
 if __name__ == "__main__":
     main()
