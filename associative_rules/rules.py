@@ -1,5 +1,6 @@
 import itertools as it
 
+
 def _get_keys_combinations(item):
     return map(sorted, (set(x) for x in it.chain(*[it.combinations(item, i+1) for i in range(len(item)-1)])))
 
@@ -73,6 +74,7 @@ def _levarage(rules, sup_items_dict, min_levar=None):
         else:
             coef.append(levar)
 
+
 def _conviction(rules, sup_items_dict, min_conv=None):
     if min_conv and min_conv < 0:
         raise ValueError('Mininmum conviction must be a positive number within the interval [0, inf). '
@@ -93,14 +95,10 @@ def _conviction(rules, sup_items_dict, min_conv=None):
 
 
 def get_associative_rules(sup_items_dict, min_conf=None, min_lift=None, min_levar=None, min_conv=None):
-    
-    if any([min_conf, min_lift, min_levar, min_conv]):
-        #temp_rules = {k: [v] for k, v in sup_items_dict.items() if len(k) > 1}
-        rules = dict()
-        _confidience(rules, sup_items_dict, min_conf)
-        _lift(rules, min_lift)
-        _levarage(rules, sup_items_dict, min_levar)
-        _conviction(rules, sup_items_dict, min_conv)
-        return rules           
-     
-    return sup_items_dict
+    #temp_rules = {k: [v] for k, v in sup_items_dict.items() if len(k) > 1}
+    rules = dict()
+    _confidience(rules, sup_items_dict, min_conf)
+    _lift(rules, min_lift)
+    _levarage(rules, sup_items_dict, min_levar)
+    _conviction(rules, sup_items_dict, min_conv)
+    return rules 
