@@ -6,14 +6,14 @@ import allure
 
 data_path = 'username.csv'
 
-@allure.title('Проверка функции чтения csv-файла')
+@allure.step('Checking _csv_read function')
 def test_csv_read():
     expected_result = ['Username; Identifier;First name;Last name']
     data = apriori._csv_read(data_path)
     actual_result = next(data)
     assert expected_result == actual_result
 
-@allure.title('Проверка работы функции подсчета поддержки')
+@allure.step('Checking _support function')
 def test_support():
     expected_result = {(('Username; Identifier;First name;Last name',), 0.2),
         (('grey07;2070;Laura;Grey',), 0.2),
@@ -23,7 +23,7 @@ def test_support():
     actual_result = apriori._support(apriori._csv_read(data_path), 0.2)
     assert expected_result == actual_result
 
-@allure.title('Проверка работы функции нахождения возможных наборов')
+@allure.step('Checking _get_L_items function')
 def test_get_L_items():
     expected_result = {('booker12;9012;Rachel;Booker', 'johnson81;4081;Craig;Johnson'),
         ('jenkins46;9346;Mary;Jenkins', 'johnson81;4081;Craig;Johnson'),
@@ -38,7 +38,7 @@ def test_get_L_items():
     actual_result = apriori._get_L_items(list((dict(apriori._support(apriori._csv_read(data_path), 0.2))).keys()), 2)
     assert expected_result == actual_result
 
-@allure.title('Проверка реализации алгоритма apriori')
+@allure.step('Checking apriori function')
 def test_apriori():
     expected_result = {('johnson81;4081;Craig;Johnson',): 0.2,
         ('Username; Identifier;First name;Last name',): 0.2,
