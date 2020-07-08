@@ -61,7 +61,7 @@ def _lift(rules, min_lift=None):
             coef.append(lift)
 
 
-def _levarage(rules, sup_items_dict, min_levar=None):
+def _levarage(rules, min_levar=None):
     if min_levar and (min_levar < -1 or min_levar > 1):
         raise ValueError('Mininmum levarage must be a number within the interval [-1, 1]. '
                         f'You enter {min_levar}.')
@@ -75,7 +75,7 @@ def _levarage(rules, sup_items_dict, min_levar=None):
             coef.append(levar)
 
 
-def _conviction(rules, sup_items_dict, min_conv=None):
+def _conviction(rules, min_conv=None):
     if min_conv and min_conv < 0:
         raise ValueError('Mininmum conviction must be a positive number within the interval [0, inf). '
                          f'You enter {min_conv}.')
@@ -99,6 +99,6 @@ def get_associative_rules(sup_items_dict, min_conf=None, min_lift=None, min_leva
     rules = dict()
     _confidience(rules, sup_items_dict, min_conf)
     _lift(rules, min_lift)
-    _levarage(rules, sup_items_dict, min_levar)
-    _conviction(rules, sup_items_dict, min_conv)
+    _levarage(rules, min_levar)
+    _conviction(rules, min_conv)
     return rules 
