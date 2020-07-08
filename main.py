@@ -42,13 +42,17 @@ def write_to_csv(rules, path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-P', '--path', help="path to database", type=str, required=True)
-    parser.add_argument('-S', '--sup', help="minimum support", type=float, required=True)
-    parser.add_argument('--conf', help="minimum confidience", type=float, required=False)
-    parser.add_argument('--lift', help="minimum lift", type=float, required=False)
-    parser.add_argument('--levar', help="minimum levarage", type=float, required=False)
-    parser.add_argument('--conv', help="minimum conviction", type=float, required=False)
-    parser.add_argument('-J', '--json', help="write rules to json file", action='store_const', const=True, required=False)
+    mendatory_group = parser.add_argument_group('Mendatory')
+    rule_coeffs = parser.add_argument_group('Rule sorting coefficients')
+    output_flags = parser.add_argument_group('Output flags')
+
+    mendatory_group.add_argument('-P', '--path', help="path to database", type=str, required=True)
+    mendatory_group.add_argument('-S', '--sup', help="minimum support", type=float, required=True)
+    rule_coeffs.add_argument('--conf', help="minimum confidience", type=float, required=False)
+    rule_coeffs.add_argument('--lift', help="minimum lift", type=float, required=False)
+    rule_coeffs.add_argument('--levar', help="minimum levarage", type=float, required=False)
+    rule_coeffs.add_argument('--conv', help="minimum conviction", type=float, required=False)
+    output_flags.add_argument('-J', '--json', help="write rules to json file", action='store_const', const=True, required=False)
     args = parser.parse_args()
     
     try:
