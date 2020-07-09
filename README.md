@@ -4,6 +4,7 @@
 
 ## Установка и использование
 
+Python >= 3.6
 ```
 git clone https://github.com/MercyFlesh/associative_rules.git
 cd associative_rules
@@ -29,6 +30,32 @@ Rule sorting coefficients:
 Output flags:
     -J, --json            write rules to json file
 ```
+
+## Юнит-тесты
+
+Тесты находятся в директории tests.
+Для тестирования используется Pytest в связке с Allure Test Report framework
+
+**Установка зависимостей:**
+```
+cd tests
+pip install -r requirements.txt
+
+sudo apt-add-repository ppa:qameta/allure
+sudo apt-get update 
+sudo apt-get install allure
+```
+
+**Запуск юнит-тестов:**
+```
+pytest <autotests_filename> --alluredir=/path/to/reports
+```
+
+**Просмотр отчетов:**
+```
+allure serve /path/to/reports
+```
+Данная команда развернет сервер с отчетами и автоматически откроет его в браузере.
 
 ***
 
