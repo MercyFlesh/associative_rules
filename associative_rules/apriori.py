@@ -1,6 +1,23 @@
+"""
+Module of Apriori algorithm 
+
+Used to search for sequences in the base satisfying, 
+given minimum support
+"""
+
 import csv
 
+
 def _csv_read(path):
+    """Generator to read csv databse
+    
+    Args:
+        path (str): csv file path
+
+    Yields:
+        (list): list from row fields csv file
+    """
+
     try:
         with open(path, 'r') as file:
             reader = csv.reader(file, delimiter=',')
@@ -16,23 +33,42 @@ def _csv_read(path):
 
 
 def _support(iterable, min_sup, list_items=set()):
+    """Calculation support
+
+    Сalculation of support for sequences and 
+    selection suitable for the minimum
+
+    Args:
+        iterable (iterable object): iterable object consisting of fields of the source database
+        min_sup (float): minimum support
+        list_items (set, optional): set of tuples of possible sequences that need 
+                                to be checked for presence in the database and 
+                                to calculate support. Defaults to set().
+
+    Returns:
+        (set): tuples of sequences matching minimal support {((item_1, ...), support), ...}
+    """
+
     support_set = set()
     temp_dict = dict()
-    n = 0
-
+    transaction_counter = 0 
+    
     for row in iterable:
-        n += 1
+        transaction_counter += 1
         if list_items:
-           for item in list_items:
-               if set(item).issubset(row):
-                   temp_dict[item] = temp_dict.get(item, 0) + 1
+            # counting occurrences possible items in the database 
+            for item in list_items:
+                if set(item).issubset(row):
+                    temp_dict[item] = temp_dict.get(item, 0) + 1
         else:
+            # counting occurrences of unique singleton items
             for x in row:
                 key = (x,)
                 temp_dict[key] = temp_dict.get(key, 0) + 1
 
     for key, val in temp_dict.items():
-        support = val/n
+        # calculation and checking support
+        support = val/transaction_counter
         if support >= min_sup:
             support_set.add((key, support))
 
@@ -40,33 +76,49 @@ def _support(iterable, min_sup, list_items=set()):
 
 
 def _get_L_items(list_items, size):
-    temp_L_items = set()
+    """
+    Сreates possible sets given size from a given list
+
+    Args:
+        list_items (list): list current items len(item) = size-1
+        size (int): len new items
+
+    Returns:
+        (set): new possible items
+    """
+
+    L_items = set()
     length = len(list_items)
 
-    """
-    def check_duble(new_item):
-        for x in temp_L_items:
-            if new_item == set(x):
-                return True
-        return False
-    """
     for x, i in zip(list_items[:length-1], range(length-1)):
         for y in list_items[i+1:length]:
-            item = set(x).union(y)
-            if len(item) == size: # and not check_duble(item):
-                temp_L_items.add(tuple(sorted(item)))
+            # bonding current sets to create new possible
+            item = set(x).union(y) 
+            if len(item) == size:
+                L_items.add(tuple(sorted(item)))
 
-    return temp_L_items
+    return L_items
 
 
-def apriori(db_path, min_sup=0.5):
+def apriori(db_path, min_sup):
+    """Start Apriori algorithm
+
+    Args:
+        db_path (str): path to csv database
+        min_sup (float): given minimum support
+
+    Returns:
+        (dict): items {(item_1, ...): support, ...}
+    """
+
     if min_sup < 0 or min_sup > 1:
         raise ValueError('Minimum support must be a positive number within the interval [0, 1]. '
                         f'You enter: {min_sup}.')
 
+    # find support for single items
     sup_items = dict(_support(_csv_read(db_path), min_sup))
     
-    n = 2
+    n = 2    # counter size for create new L_items in _get_L_items
     L_items = sup_items.copy()
     while(L_items):
         sup_items.update(L_items)

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import json
 import csv
@@ -8,6 +9,14 @@ from associative_rules.rules import get_associative_rules
 
 
 def write_to_json(rules, path):
+    """Write found rules to json file
+
+    Args:
+        rules (dict): a dictionary containing, whose keys are sequence rules, 
+                    and the values ​​are a list of rule evaluation metrics
+        path (str): path to the given csv database
+    """
+
     name_path = os.path.splitext(path)[0]
     with open(f'{name_path}_rules.json', 'w') as file:
         to_json = {str(k): v for k, v in rules.items()}
@@ -17,11 +26,13 @@ def write_to_json(rules, path):
 
 
 def write_to_csv(rules, path):
+    """Write found rules to csv file"""
+    
     name_path = os.path.splitext(path)[0]
     data_list = [
         [
-            'fist_items', 'second_items', 'fist_support', 
-            'second_support', 'item_support', 'confidience', 
+            'first_items', 'second_items', 'first_support', 
+            'second_support', 'common_support', 'confidience', 
             'lift', 'levarage', 'conviction',
         ]
     ]
