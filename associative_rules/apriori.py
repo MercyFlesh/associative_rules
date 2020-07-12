@@ -49,8 +49,8 @@ def _support(iterable, min_sup, list_items=set()):
         (set): tuples of sequences matching minimal support {((item_1, ...), support), ...}
     """
 
-    support_set = set()
-    temp_dict = dict()
+    support_set = set()    # set of tuples items with support
+    temp_dict = dict()     # dict of unique items with count
     transaction_counter = 0 
     
     for row in iterable:
@@ -75,9 +75,9 @@ def _support(iterable, min_sup, list_items=set()):
     return support_set  
 
 
-def _get_L_items(list_items, size):
+def _get_C_items(list_items, size):
     """
-    Сreates possible sets given size from a given list
+    Сreates possible potentially frequent items  given size from a given list
 
     Args:
         list_items (list): list current items len(item) = size-1
@@ -87,7 +87,7 @@ def _get_L_items(list_items, size):
         (set): new possible items
     """
 
-    L_items = set()
+    C_items = set()    # the set of potentially frequent size-element items.
     length = len(list_items)
 
     for x, i in zip(list_items[:length-1], range(length-1)):
@@ -95,9 +95,9 @@ def _get_L_items(list_items, size):
             # bonding current sets to create new possible
             item = set(x).union(y) 
             if len(item) == size:
-                L_items.add(tuple(sorted(item)))
+                C_items.add(tuple(sorted(item)))
 
-    return L_items
+    return C_items
 
 
 def apriori(db_path, min_sup):
@@ -118,11 +118,11 @@ def apriori(db_path, min_sup):
     # find support for single items
     sup_items = dict(_support(_csv_read(db_path), min_sup))
     
-    n = 2    # counter size for create new L_items in _get_L_items
-    L_items = sup_items.copy()
+    n = 2                         # counter size for create new L_items
+    L_items = sup_items.copy()    # a set of n-element sets whose support is not less than given
     while(L_items):
         sup_items.update(L_items)
-        L_items = _get_L_items(list(L_items.keys()), n)
+        L_items = _get_C_items(list(L_items.keys()), n)
         if not L_items:
             break
         L_items = dict(_support(_csv_read(db_path), min_sup, L_items))

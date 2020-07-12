@@ -24,7 +24,7 @@ def test_support():
     assert expected_result == actual_result
 
 @allure.step('Checking _get_L_items function')
-def test_get_L_items():
+def test_get_C_items():
     expected_result = {('booker12;9012;Rachel;Booker', 'johnson81;4081;Craig;Johnson'),
         ('jenkins46;9346;Mary;Jenkins', 'johnson81;4081;Craig;Johnson'),
         ('Username; Identifier;First name;Last name', 'johnson81;4081;Craig;Johnson'),
@@ -35,7 +35,7 @@ def test_get_L_items():
         ('booker12;9012;Rachel;Booker', 'jenkins46;9346;Mary;Jenkins'),
         ('Username; Identifier;First name;Last name', 'booker12;9012;Rachel;Booker'),
         ('grey07;2070;Laura;Grey', 'jenkins46;9346;Mary;Jenkins')}
-    actual_result = apriori._get_L_items(list((dict(apriori._support(apriori._csv_read(data_path), 0.2))).keys()), 2)
+    actual_result = apriori._get_C_items(list((dict(apriori._support(apriori._csv_read(data_path), 0.2))).keys()), 2)
     assert expected_result == actual_result
 
 @allure.step('Checking apriori function')
